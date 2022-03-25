@@ -46,7 +46,6 @@ class BedWarsCommand extends Command implements PluginOwned {
 				goto help;
 			case "create":
 				if(!$sender instanceof Player){
-					loser_msg:
 					$sender->sendMessage(Bedwars::PREFIX . "get a life haha u are trying to use this subcmd not in game what a loser");
 					return;
 				}
