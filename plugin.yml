@@ -1,0 +1,12 @@
+name: Bedwars
+main: VaxPex\Bedwars
+src-namespace-prefix: VaxPex
+version: 1.0.0
+api: [4.0.0]
+author: VaxPex
+description: bedwars for pm
+
+permissions:
+  bedwars.admin:
+    description: to use all bw sub commands
+    default: op
