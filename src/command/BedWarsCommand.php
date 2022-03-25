@@ -59,7 +59,7 @@ class BedWarsCommand extends Command implements PluginOwned {
 				}
 
 				$generated = ($this->getOwningPlugin()->getServer()->getWorldManager()->isWorldGenerated($args[1])) |
-					($this->getOwningPlugin()->getServer()->getWorldManager()->isWorldLoaded($args[1]));
+					(!$this->getOwningPlugin()->getServer()->getWorldManager()->isWorldLoaded($args[1]));
 				if(!$generated){
 					$sender->sendMessage(Bedwars::PREFIX . "$args[1] should be instanceof (World)");
 					return;
