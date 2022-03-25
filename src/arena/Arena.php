@@ -1,0 +1,33 @@
+<?php
+
+/**
+ *  ____           ___        __
+ * | __ )  ___  __| \ \      / /_ _ _ __ ___
+ * |  _ \ / _ \/ _` |\ \ /\ / / _` | '__/ __|
+ * | |_) |  __/ (_| | \ V  V / (_| | |  \__ \
+ * |____/ \___|\__,_|  \_/\_/ \__,_|_|  |___/
+ *
+ * This file is under the GNU-3.0 read it before you do anything
+ *
+ * @copyright VaxPex 2018/2022
+ */
+
+declare(strict_types=1);
+
+namespace VaxPex\arena;
+
+use pocketmine\world\World;
+
+final class Arena {
+
+	public array $data = [];
+	public string $mode = "NoMode";
+	public ?World $world = null;
+
+	public function __construct(World $world, array $data, string $mode) {
+		$this->data = $data;
+		$this->mode = $mode;
+		$this->world = $world;
+	}
+
+}
