@@ -16,18 +16,31 @@ declare(strict_types=1);
 
 namespace VaxPex\arena;
 
+use pocketmine\utils\Config;
 use pocketmine\world\World;
+use VaxPex\Bedwars;
 
-final class Arena {
+final class Arena
+{
 
 	public array $data = [];
 	public string $mode = "NoMode";
 	public ?World $world = null;
+	public Bedwars $plugin;
 
-	public function __construct(World $world, array $data, string $mode) {
+	public function __construct(World $world, array $data, string $mode)
+	{
 		$this->data = $data;
 		$this->mode = $mode;
 		$this->world = $world;
+		$this->plugin = Bedwars::getInstance();
 	}
 
+	public function saveData()
+	{
+		$config = new Config($this->plugin->getDataFolder() . "arenas/" . $this->world->getFolderName() . ".yml", Config::YAML);
+		$config->setAll($this->data);
+		$config->save();
+		$config->reload();
+	}
 }

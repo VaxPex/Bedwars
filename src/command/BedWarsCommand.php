@@ -23,15 +23,18 @@ use pocketmine\plugin\PluginOwned;
 use VaxPex\arena\Arena;
 use VaxPex\Bedwars;
 
-class BedWarsCommand extends Command implements PluginOwned {
+class BedWarsCommand extends Command implements PluginOwned
+{
 
-	public function __construct(){
+	public function __construct()
+	{
 		parent::__construct("bw", "bedwars for pm", null, ["bedwars"]);
 		parent::setPermission("bedwars.admin");
 	}
 
-	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(!isset($args[0])){
+	public function execute(CommandSender $sender, string $commandLabel, array $args)
+	{
+		if (!isset($args[0])) {
 			help:
 			$sender->sendMessage("Help list:");
 			$sender->sendMessage("/$commandLabel help : get the help (again)");
@@ -41,41 +44,56 @@ class BedWarsCommand extends Command implements PluginOwned {
 			$sender->sendMessage("/$commandLabel list : get the list of arenas");
 			return;
 		}
-		switch (strtolower($args[0])){
+		switch (strtolower($args[0])) {
 			case "help":
 				goto help;
 			case "create":
-				if(!$sender instanceof Player){
+				if (!$sender instanceof Player) {
 					$sender->sendMessage(Bedwars::PREFIX . "get a life haha u are trying to use this subcmd not in game what a loser");
 					return;
 				}
-				if(!isset($args[1])){
+				if (!isset($args[1])) {
 					usage_create:
 					$sender->sendMessage(Bedwars::PREFIX . "/$commandLabel create {worldName} {arenaName}");
 					return;
 				}
-				if(!isset($args[2])){
+				if (!isset($args[2])) {
 					goto usage_create;
 				}
 
-				if(!($this->getOwningPlugin()->getServer()->getWorldManager()->isWorldGenerated($args[1]))){
+				if (!($this->getOwningPlugin()->getServer()->getWorldManager()->isWorldGenerated($args[1]))) {
 					$sender->sendMessage(Bedwars::PREFIX . "$args[1] should be instanceof (World)");
 					return;
 				}
-				if(!is_string($args[2])){
+				if (!is_string($args[2])) {
 					goto usage_create;
 				}
-				$world = $this->getOwningPlugin()->getServer()->getWorldManager()->getWorldByName($args[1]);
-				$this->getOwningPlugin()->arenas[$args[2]] = new Arena($world, [], "NoMode");
-				$file = fopen($this->getOwningPlugin()->getDataFolder() . "arenas/" . $args[1] . ".yml", "w+");
-				fwrite($file, "worldName: $args[1]\n");
-				fwrite($file, "arenaName: $args[2]\n");
-				fwrite($file, "mode: NoMode\n");
-				fclose($file);
+				if (isset($this->getOwningPlugin()->arenas[$args[1]])) {
+					$sender->sendMessage(Bedwars::PREFIX . "arena already exist");
+					return;
+				}
+				try {
+					if (!($this->getOwningPlugin()->getServer()->getWorldManager()->isWorldLoaded($args[1]))) {
+						$this->getOwningPlugin()->getServer()->getWorldManager()->loadWorld($args[1]);
+					} else {
+						$this->getOwningPlugin()->arenas[$args[2]] = new Arena($this->getOwningPlugin()->getServer()->getWorldManager()->getWorldByName($args[1]), [
+							"worldName" => $args[1],
+							"arenaName" => $args[2],
+							"mode" => "NoMode"
+						], "NoMode");
+					}
+				} finally {
+					$this->getOwningPlugin()->arenas[$args[2]] = new Arena($this->getOwningPlugin()->getServer()->getWorldManager()->getWorldByName($args[1]), [
+						"worldName" => $args[1],
+						"arenaName" => $args[2],
+						"mode" => "NoMode"
+					], "NoMode");
+				}
+				$this->getOwningPlugin()->arenas[$args[2]]->saveData();
 				$sender->sendMessage(Bedwars::PREFIX . "arena created!");
 				break;
 			case "setup":
-				if(!$sender instanceof Player){
+				if (!$sender instanceof Player) {
 					$sender->sendMessage(Bedwars::PREFIX . "get a life haha u are trying to use this subcmd not in game what a loser");
 					return;
 				}
@@ -83,7 +101,8 @@ class BedWarsCommand extends Command implements PluginOwned {
 		}
 	}
 
-	public function getOwningPlugin(): Bedwars {
+	public function getOwningPlugin(): Bedwars
+	{
 		return Bedwars::getInstance();
 	}
 }
