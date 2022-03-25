@@ -70,7 +70,7 @@ class Bedwars extends PluginBase {
 		self::setInstance($this);
 	}
 
-	private function getSetupFor(string $arenaName){
+	private function getSetupFor(string $arenaName, Player $player){
 		$form = new CustomForm(function (Player $player, $data) use($arenaName){
 			if($data === null){
 				return;
@@ -85,6 +85,7 @@ class Bedwars extends PluginBase {
 		});
 		$form->setTitle($arenaName . " Setup");
 		$form->addInput("how much max-players?", "2, 10....");
+		$player->sendForm($form);
 	}
 
 	public function sendSetupMenu(Player $player){
@@ -92,7 +93,7 @@ class Bedwars extends PluginBase {
 			if($data === null){
 				return;
 			}
-			$this->getSetupFor($data);
+			$this->getSetupFor($data, $player);
 		});
 		$form->setTitle("Bedwars");
 		if(count($this->arenas) < 1){
