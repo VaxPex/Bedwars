@@ -58,9 +58,7 @@ class BedWarsCommand extends Command implements PluginOwned {
 					goto usage_create;
 				}
 
-				$generated = ($this->getOwningPlugin()->getServer()->getWorldManager()->isWorldGenerated($args[1])) |
-					(!$this->getOwningPlugin()->getServer()->getWorldManager()->isWorldLoaded($args[1]));
-				if(!$generated){
+				if(!($this->getOwningPlugin()->getServer()->getWorldManager()->isWorldGenerated($args[1]))){
 					$sender->sendMessage(Bedwars::PREFIX . "$args[1] should be instanceof (World)");
 					return;
 				}
@@ -69,7 +67,11 @@ class BedWarsCommand extends Command implements PluginOwned {
 				}
 				$world = $this->getOwningPlugin()->getServer()->getWorldManager()->getWorldByName($args[1]);
 				$this->getOwningPlugin()->arenas[$args[2]] = new Arena($world, [], "NoMode");
-				$this->getOwningPlugin()->saveResource($this->getOwningPlugin()->getDataFolder() . "arenas/" . $args[1] . ".yml");
+				$file = fopen($this->getOwningPlugin()->getDataFolder() . "arenas/" . $args[1] . ".yml", "w+");
+				fwrite($file, "worldName: $args[1]\n");
+				fwrite($file, "arenaName: $args[2]\n");
+				fwrite($file, "mode: NoMode\n");
+				fclose($file);
 				$sender->sendMessage(Bedwars::PREFIX . "arena created!");
 				break;
 			case "setup":

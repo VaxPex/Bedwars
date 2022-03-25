@@ -54,9 +54,17 @@ class Bedwars extends PluginBase {
 		$this->saveDefaultConfig();
 		$this->website = $this->getConfig()->get("website");
 		foreach (glob($this->getDataFolder() . "arenas/*.yml") as $arena){
-			$arenaName = basename($arena);
+			$arenaName = basename($arena, ".yml");
 			$all = (new Config($arena))->getAll();
-			$this->arenas[$arenaName] = new Arena($this->getServer()->getWorldManager()->getWorldByName($arenaName), $all, $all["mode"]);
+			try {
+				if(!$this->getServer()->getWorldManager()->isWorldLoaded($arenaName)){
+					$this->getServer()->getWorldManager()->loadWorld($arenaName);
+				} else {
+					$this->arenas[$arenaName] = new Arena($this->getServer()->getWorldManager()->getWorldByName($arenaName), $all, $all["mode"]);
+				}
+			} finally {
+				$this->arenas[$arenaName] = new Arena($this->getServer()->getWorldManager()->getWorldByName($arenaName), $all, $all["mode"]);
+			}
 		}
 		$this->getServer()->getCommandMap()->register("bwfd", new BedWarsCommand());
 		self::setInstance($this);
